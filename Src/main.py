@@ -9,6 +9,7 @@ repackage.up()
 from Src.custom_text import ScrolledText
 import matplotlib.pyplot as mlib
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import numpy as np
 import tkinter.tix as tx
 import time
 import tkinter.filedialog as fd
@@ -19,7 +20,7 @@ from skimage.metrics import structural_similarity as ssim
 class Base(tx.Tk):
     def __init__(self):
         super().__init__()
-        self.main_database = connector_.connect(host="localhost",user="root",password="")
+        self.main_database = connector_.connect(host="localhost",user="root",password="12345")
         self.cursor_1 = self.main_database.cursor()
         print("Enters...")
         self.cursor_1.execute("CREATE DATABASE IF NOT EXISTS fest_for_students;")
@@ -635,8 +636,10 @@ class Base(tx.Tk):
                 i.set("")
             self.save_s()
             msgbox.showwarning("Warning","Frequent abnormal motions detected and thereby the application rejects your entries")
-        if self.pre_img != "":
-            self.ssim_val = ssim(self.pre_img, self.curr_img, multichannel=True)
+        if str(self.pre_img)!="":
+            self.pre_img= np.squeeze(self.pre_img)
+            self.curr_img = np.squeeze(self.curr_img)
+            self.ssim_val = ssim(self.pre_img, self.curr_img,channel_axis=-1, data_range=255)
             print(self.ssim_val)
             if self.ssim_val<0.570:
                 self.check_true = False
